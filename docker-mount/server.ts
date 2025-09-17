@@ -14,6 +14,7 @@ try {
 import express, { Express, Request, Response } from 'express';
 import ejs from 'ejs';
 import path from 'path';
+import sqlite3 from 'sqlite3';
 
 const app: Express = express();
 
@@ -39,21 +40,26 @@ app.get('/mount', (req: Request, res: Response) => {
 });
 
 // Route to serve JSON data
-app.get('/api/data', (req: Request, res: Response) => {
-   interface ApiData {
-     id: number;
-     name: string;
-   }
-   const data: ApiData[] = [
-     { id: 1, name: 'Item 1' },
-     { id: 2, name: 'Item 2' },
-     { id: 3, name: 'Item 3' }
-   ];
-   res.json({
-     message: 'Hello World from JSON API',
-     timestamp: new Date(),
-     data
-   });
+app.get('/api/data', async (req: Request, res: Response) => {
+  const dbPath = path.join(__dirname, 'definitions.db');
+  const db = new sqlite3.Database(dbPath);
+
+  db.all('SELECT row_id, term, meaning FROM definitions ORDER BY row_id', (err: Error | null, rows: any[]) => {
+    if (err) {
+      console.error(err.message);
+      res.status(500).json({ error: 'Database query failed' });
+      db.close();
+      return;
+    }
+
+    res.json({
+      message: 'Hello World from JSON API',
+      timestamp: new Date(),
+      data: rows
+    });
+
+    db.close();
+  });
 });
 
 // Start the server

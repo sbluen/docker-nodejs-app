@@ -3,6 +3,8 @@
     <head>
         <link rel="stylesheet" type="text/css" href="main.css">
         <title>Steven's Node.js Application</title>
+        <!-- jQuery CDN -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     </head>
     <body>
         <h1>Welcome to Steven's Node.js Application</h1>
@@ -10,8 +12,89 @@
         <ul>
             <li><a href="https://nodejs.org/en/">Node.js</a></li>
             <li><a href="https://www.docker.com/">Docker</a></li>
+            <li><a href="https://sqlite.org/">SQLite</a></li>
             <li><a href="/mount">Bind Mount</a></li>
             <li><a href="/api/data">JSON API</a></li>
+            <li><a href="https://expressjs.com/">Express.js</a></li>
+            <li><a href="https://typescriptlang.org/">TypeScript</a></li>
+            <li><a href="https://jquery.com/">jQuery</a></li>
         </ul>
+
+        <script>
+            $(document).ready(function() {
+                // Fetch definitions from /api/data
+                $.getJSON('/api/data', function(response) {
+                    if (response && response.data && response.data.length > 0) {
+                        const terms = response.data.reduce((map, item) => {
+                            map[item.term.toLowerCase()] = item.meaning;
+                            return map;
+                        }, {});
+
+                        // Function to wrap terms in tooltips
+                        function wrapTerms(node) {
+                            if (node.nodeType === 3) { // Text node
+                                const text = node.textContent;
+                                let newText = text;
+                                Object.keys(terms).forEach(term => {
+                                    const regex = new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+                                    newText = newText.replace(regex, function(match) {
+                                        return `<span class="tooltip-term" data-meaning="${terms[term.toLowerCase()]}">${match}</span>`;
+                                    });
+                                });
+                                if (newText !== text) {
+                                    const temp = document.createElement('div');
+                                    temp.innerHTML = newText;
+                                    node.parentNode.replaceChild(temp, node);
+                                    while (temp.firstChild) {
+                                        temp.parentNode.insertBefore(temp.firstChild, temp);
+                                    }
+                                    temp.parentNode.removeChild(temp);
+                                }
+                            } else {
+                                for (let i = 0; i < node.childNodes.length; i++) {
+                                    wrapTerms(node.childNodes[i]);
+                                }
+                            }
+                        }
+
+                        // Apply to body content (avoid script tags)
+                        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+                        let node;
+                        while (node = walker.nextNode()) {
+                            if (node.parentNode.tagName !== 'SCRIPT' && node.parentNode.tagName !== 'STYLE') {
+                                wrapTerms(node);
+                            }
+                        }
+
+                        // Attach hover listeners (now that spans are added)
+                        $(document).on('mouseenter', '.tooltip-term', function() {
+                            const $term = $(this);
+                            const meaning = $term.data('meaning');
+                            if (! $term.find('.tooltip-popup').length) {
+                                $term.append(`<span class="tooltip-popup">${meaning}</span>`);
+                            }
+
+                            // Check if tooltip would go off the top of the page
+                            const rect = this.getBoundingClientRect();
+                            if (rect.top < 100) { // If element is near top, position below
+                                $term.addClass('tooltip-below');
+                            } else {
+                                $term.removeClass('tooltip-below');
+                            }
+
+                            $term.find('.tooltip-popup').stop(true, true).fadeIn(200);
+                        }).on('mouseleave', '.tooltip-term', function() {
+                            const $term = $(this);
+                            $term.find('.tooltip-popup').stop(true, true).fadeOut(200, function() {
+                                $(this).remove();
+                            });
+                            $term.removeClass('tooltip-below'); // Reset class
+                        });
+                    }
+                }).fail(function() {
+                    console.error('Failed to fetch definitions');
+                });
+            });
+        </script>
     </body>
 </html>

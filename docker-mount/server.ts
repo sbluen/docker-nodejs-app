@@ -1,16 +1,3 @@
-// TODO: For production, dependencies should be included in the Docker image rather than installed at runtime
-// Check if dependencies are installed, if not install them
-try {
-  require('express');
-  require('ejs');
-} catch (e) {
-  console.log('Dependencies not found, installing...');
-  const { execSync } = require('child_process');
-  // Run npm install in the current directory where package.json is located
-  execSync('npm install', { stdio: 'inherit', cwd: __dirname });
-  console.log('Dependencies installed successfully');
-}
-
 import express, { Express, Request, Response } from 'express';
 import ejs from 'ejs';
 import path from 'path';

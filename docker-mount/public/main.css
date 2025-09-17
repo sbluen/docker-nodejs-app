@@ -11,3 +11,59 @@ p {
   font-family: verdana;
   font-size: 20px;
 }
+
+/* Tooltip Styles */
+.tooltip-term {
+  position: relative;
+  border-bottom: 1px dotted #000;
+  cursor: help;
+}
+
+.tooltip-popup {
+  visibility: hidden;
+  width: 250px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1000;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -125px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.tooltip-term:hover .tooltip-popup {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-popup::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+/* Tooltip below styles */
+.tooltip-below .tooltip-popup {
+  bottom: auto;
+  top: 125%;
+  margin-top: 5px;
+  margin-left: -125px;
+}
+
+.tooltip-below .tooltip-popup::after {
+  top: auto;
+  bottom: 100%;
+  border-color: transparent transparent #333 transparent;
+}

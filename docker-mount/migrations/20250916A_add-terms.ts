@@ -2,7 +2,7 @@ import * as sqlite3 from 'sqlite3';
 import * as path from 'path';
 import type { Statement } from 'sqlite3';
 
-const dbPath = path.join(__dirname, 'prisma', 'definitions.db');
+const dbPath = path.join(__dirname, '..', 'prisma', 'definitions.db');
 const db = new sqlite3.Database(dbPath);
 
 db.serialize(() => {

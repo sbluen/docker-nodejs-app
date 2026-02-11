@@ -22,29 +22,47 @@
 
         <script>
             $(document).ready(function() {
-                // Fetch definitions from /api/data
-                $.getJSON('/api/data', function(response) {
-                    if (response && response.data && response.data.length > 0) {
-                        const terms = response.data.reduce((map, item) => {
-                            map[item.term.toLowerCase()] = item.meaning;
-                            return map;
-                        }, {});
-
-                        // Add native title tooltips to <a> tags in ul that match terms
-                        const $ul = $('ul');
-                        if ($ul.length) {
-                            $ul.find('a').each(function() {
-                                const $link = $(this);
-                                const linkText = $link.text().trim().toLowerCase();
-                                const meaning = terms[linkText];
-                                if (meaning) {
-                                    $link.attr('title', meaning);
+                // Fetch definitions from GraphQL endpoint
+                $.ajax({
+                    url: '/graphql',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        query: `
+                            query {
+                                definitions {
+                                    term
+                                    meaning
                                 }
-                            });
+                            }
+                        `
+                    }),
+                    success: function(response) {
+                        console.log('GraphQL Response:', response);
+
+                        if (response?.data?.definitions?.length ?? 0 > 0) {
+                            const terms = response.data.definitions.reduce((map, item) => {
+                                map[item.term.toLowerCase()] = item.meaning;
+                                return map;
+                            }, {});
+
+                            // Add native title tooltips to <a> tags in ul that match terms
+                            const $ul = $('ul');
+                            if ($ul.length) {
+                                $ul.find('a').each(function() {
+                                    const $link = $(this);
+                                    const linkText = $link.text().trim().toLowerCase();
+                                    const meaning = terms[linkText];
+                                    if (meaning) {
+                                        $link.attr('title', meaning);
+                                    }
+                                });
+                            }
                         }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('GraphQL Error:', error);
                     }
-                }).fail(function() {
-                    console.error('Failed to fetch definitions');
                 });
             });
         </script>

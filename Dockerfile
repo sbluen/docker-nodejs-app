@@ -19,8 +19,12 @@ RUN cd docker-mount && npx prisma generate
 # Set NODE_PATH to use /app/node_modules for module resolution
 ENV NODE_PATH=/app/node_modules
 
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Expose port
 EXPOSE 3000
 
-# Define the command to run the application: set up database, build TS then start compiled server
-CMD ["sh", "-c", "cd docker-mount && npx prisma db push && npx ts-node add-terms.ts && cd .. && npx tsc --project docker-mount/tsconfig.json && node docker-mount/server.js"]
+# Run entrypoint script
+CMD ["/entrypoint.sh"]

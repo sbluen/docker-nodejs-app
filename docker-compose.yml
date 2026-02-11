@@ -5,6 +5,8 @@ services:
     build: .
     ports:
       - "3000:3000"
+    environment:
+      - NODE_PATH=/app/node_modules
     volumes:
-      - ./docker-mount:/app/data
-      - /app/data/node_modules
+      - ./docker-mount:/app/docker-mount
+      - /app/docker-mount/node_modules

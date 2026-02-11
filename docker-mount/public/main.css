@@ -17,6 +17,11 @@ p {
   position: relative;
   border-bottom: 1px dotted #000;
   cursor: help;
+  text-decoration: none; /* Ensure tooltips don't interfere with link underlines */
+}
+
+a .tooltip-term {
+  color: inherit; /* Preserve link color inside anchors */
 }
 
 .tooltip-popup {

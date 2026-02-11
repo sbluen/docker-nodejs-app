@@ -1,32 +1,5 @@
 {
-  "name": "docker-node-app",
-  "version": "1.0.0",
-  "description": "A Node.js application with Docker and Express",
-  "main": "server.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "node server.js",
-    "dev": "nodemon --exec ts-node server.ts"
-  },
   "dependencies": {
-    "ejs": "^3.1.9",
-    "express": "^4.18.2",
-    "sqlite3": "^5.1.7"
-  },
-  "devDependencies": {
-    "@types/ejs": "^3.1.5",
-    "@types/express": "^4.17.21",
-    "@types/node": "^22.4.1",
-    "@types/sqlite3": "^3.1.11",
-    "nodemon": "^3.0.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
-  },
-  "keywords": [
-    "node",
-    "docker",
-    "express"
-  ],
-  "author": "Steven",
-  "license": "MIT"
+    "dotenv": "^17.2.4"
+  }
 }
